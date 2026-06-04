@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/car.dart';
 import '../theme/app_theme.dart';
+import '../details/detail.dart';
 
 class ArrivalCarCard extends StatelessWidget {
   final Car car;
+
   const ArrivalCarCard({super.key, required this.car});
 
   @override
@@ -24,16 +26,22 @@ class ArrivalCarCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              car.imageUrl,
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
+
+          Hero(
+            tag: car.id,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                car.imageUrl,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
+
           const SizedBox(width: 12),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,28 +73,57 @@ class ArrivalCarCard extends StatelessWidget {
               ],
             ),
           ),
+
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(
-                car.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: car.isFavorite ? AppTheme.primaryColor : AppTheme.textSecondary,
+                car.isFavorite
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+                color: car.isFavorite
+                    ? AppTheme.primaryColor
+                    : AppTheme.textSecondary,
                 size: 20,
               ),
+
               const SizedBox(height: 20),
-              Container(
-                height: 32,
-                width: 72,
-                decoration: BoxDecoration(
-                  color: AppTheme.textPrimary,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                alignment: Alignment.center,
-                child: const Text(
-                  'Details',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
+
+              InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration:
+                          const Duration(milliseconds: 500),
+                      pageBuilder: (_, animation, __) {
+                        return DetailScreen(car: car);
+                      },
+                      transitionsBuilder:
+                          (_, animation, __, child) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 32,
+                  width: 72,
+                  decoration: BoxDecoration(
+                    color: AppTheme.textPrimary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    'Details',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ),

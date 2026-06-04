@@ -32,7 +32,9 @@ class HomeScreen extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
-                        children: featuredCars.map((car) => FeaturedCarCard(car: car)).toList(),
+                        children: featuredCars
+                            .map((car) => FeaturedCarCard(car: car))
+                            .toList(),
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -41,7 +43,9 @@ class HomeScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
-                        children: latestArrivals.map((car) => ArrivalCarCard(car: car)).toList(),
+                        children: latestArrivals
+                            .map((car) => ArrivalCarCard(car: car))
+                            .toList(),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -73,10 +77,7 @@ class HomeScreen extends StatelessWidget {
           if (hasViewAll)
             const Text(
               'View All',
-              style: TextStyle(
-                fontSize: 13,
-                color: AppTheme.primaryColor,
-              ),
+              style: TextStyle(fontSize: 13, color: AppTheme.primaryColor),
             ),
         ],
       ),
