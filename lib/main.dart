@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'screens/home_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const RedlineMotorApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class RedlineMotorApp extends StatelessWidget {
+  const RedlineMotorApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp(
+      title: 'Redline Motors',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const HomeScreen(),
     );
   }
 }
