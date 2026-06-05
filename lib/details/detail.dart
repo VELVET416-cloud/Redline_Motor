@@ -55,50 +55,105 @@ class _DetailScreenState extends State<DetailScreen>
     super.dispose();
   }
 
-  Widget statBox(String title, String value, int index) {
-    return TweenAnimationBuilder(
-      duration: Duration(milliseconds: 400 + index * 150),
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, double val, child) {
-        return Opacity(
-          opacity: val,
-          child: Transform.translate(
-            offset: Offset(0, 20 * (1 - val)),
-            child: child,
+  /// Builds a single stat cell (used inside the 2×2 bordered grid).
+  Widget _statCell(String label, String value, String unit) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+              letterSpacing: 0.8,
+            ),
           ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-            )
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 11,
-                color: Colors.grey,
-              ),
+          const SizedBox(height: 6),
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: value,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                TextSpan(
+                  text: '  $unit',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black54,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// The 2×2 stats grid with internal dividers, matching the design.
+  Widget _statsGrid() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Row 1
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _statCell('POWER', '650', 'HP'),
+                ),
+                VerticalDivider(
+                  width: 1,
+                  thickness: 1,
+                  color: Colors.grey.shade200,
+                ),
+                Expanded(
+                  child: _statCell('0-100 KM/H', '2.8', 'SEC'),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Divider(height: 1, thickness: 1, color: Colors.grey.shade200),
+          // Row 2
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _statCell('TORQUE', '800', 'NM'),
+                ),
+                VerticalDivider(
+                  width: 1,
+                  thickness: 1,
+                  color: Colors.grey.shade200,
+                ),
+                Expanded(
+                  child: _statCell('TOP SPEED', '325', 'KM/H'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -106,13 +161,11 @@ class _DetailScreenState extends State<DetailScreen>
   @override
   Widget build(BuildContext context) {
     final car = widget.car;
-
     final width = MediaQuery.of(context).size.width;
-
     final isTablet = width > 600;
 
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: const Color(0xFFF5F5F7),
       body: SafeArea(
         child: FadeTransition(
           opacity: _fade,
@@ -123,111 +176,158 @@ class _DetailScreenState extends State<DetailScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
 
-                  // HEADER
+                  // ── HEADER ──────────────────────────────────────────────
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
                     child: Row(
                       children: [
+                        // Back button
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back_ios),
+                          icon: const Icon(Icons.chevron_left, size: 28),
                         ),
                         const Spacer(),
+                        // Share icon
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.share_outlined, size: 22),
+                        ),
+                        // Favourite icon
                         IconButton(
                           onPressed: () {
-                            setState(() {
-                              isFav = !isFav;
-                            });
+                            setState(() => isFav = !isFav);
                           },
                           icon: Icon(
-                            isFav ? Icons.favorite : Icons.favorite_border,
-                            color: AppTheme.primaryColor,
+                            isFav
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 22,
+                            color: isFav
+                                ? AppTheme.primaryColor
+                                : Colors.black87,
                           ),
                         ),
                       ],
                     ),
                   ),
 
-                  // IMAGE HERO
-                  Hero(
-                    tag: car.id,
-                    child: Center(
-                      child: Image.network(
-                        car.imageUrl,
-                        height: isTablet ? 350 : 220,
-                        fit: BoxFit.contain,
+                  // ── IMAGE + PAGER BADGE ─────────────────────────────────
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Hero(
+                        tag: car.id,
+                        child: Center(
+                          child: Image.network(
+                            car.imageUrl,
+                            height: isTablet ? 340 : 210,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
-                    ),
+                      // "1 / 1" badge
+                      Positioned(
+                        bottom: 8,
+                        right: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.55),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            '1 / 1',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
 
-                  // NAME + PRICE
+                  // ── NAME + PRICE ────────────────────────────────────────
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Car name (can be multi-line)
                         Expanded(
                           child: Text(
                             car.name,
                             style: const TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w800,
+                              height: 1.2,
                             ),
                           ),
                         ),
-                        Text(
-                          car.price,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryColor,
-                          ),
+                        const SizedBox(width: 12),
+                        // Price block
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              car.price,
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryColor,
+                              ),
+                            ),
+                            const Text(
+                              'Excl. taxes & fees',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
 
+                  const SizedBox(height: 4),
+
+                  // ── SUBTITLE / EDITION ──────────────────────────────────
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       car.details,
                       style: const TextStyle(
-                        color: AppTheme.textSecondary,
+                        fontSize: 13,
+                        color: Colors.grey,
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 20),
 
-                  // STATS
+                  // ── STATS GRID ──────────────────────────────────────────
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: GridView.count(
-                      crossAxisCount: isTablet ? 4 : 2,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 1.5,
-                      children: [
-                        statBox("POWER", "650 HP", 0),
-                        statBox("0-100", "2.8s", 1),
-                        statBox("TORQUE", "800 NM", 2),
-                        statBox("TOP SPEED", "325 KM/H", 3),
-                      ],
-                    ),
+                    child: _statsGrid(),
                   ),
 
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 28),
 
-                  // DESCRIPTION
+                  // ── VEHICLE DESCRIPTION ─────────────────────────────────
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      "DESCRIPTION",
+                      'VEHICLE DESCRIPTION',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.4,
                       ),
                     ),
                   ),
@@ -237,87 +337,157 @@ class _DetailScreenState extends State<DetailScreen>
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      "A luxury performance vehicle designed with precision engineering, combining speed, comfort and technology for the ultimate driving experience.",
+                      'Experience the pinnacle of automotive engineering with the 2024 Velocità GT-R. '
+                      'This masterpiece combines raw power with sophisticated Italian design. '
+                      'Featuring a hand-built twin-turbocharged engine and active aerodynamic '
+                      'components, it delivers an unparalleled driving experience. The interior is '
+                      'finished in premium Alcantara with custom red carbon fiber accents, reflecting '
+                      'its racing heritage while maintaining extreme luxury.',
                       style: TextStyle(
+                        fontSize: 13.5,
                         color: Colors.grey.shade700,
-                        height: 1.5,
+                        height: 1.6,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 28),
 
-                  // FEATURES
+                  // ── KEY FEATURES ────────────────────────────────────────
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      "KEY FEATURES",
+                      'KEY FEATURES',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.4,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
 
                   ...[
-                    "Carbon Ceramic Brakes",
-                    "Adaptive Suspension",
-                    "Premium Sound System",
-                    "Launch Control",
-                    "Smart Driving Assist",
-                  ].map(
-                    (f) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 6),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.check_circle,
-                              color: AppTheme.primaryColor, size: 18),
-                          const SizedBox(width: 10),
-                          Expanded(child: Text(f)),
-                        ],
+                    'Carbon Composite Braking System',
+                    'Active Launch Control',
+                    '12-Speaker Premium Sound System',
+                    'Nappa Leather Racing Seats',
+                    'Adaptive Matrix LED Headlights',
+                  ].asMap().entries.map(
+                    (entry) => TweenAnimationBuilder<double>(
+                      duration:
+                          Duration(milliseconds: 300 + entry.key * 120),
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      builder: (context, val, child) => Opacity(
+                        opacity: val,
+                        child: Transform.translate(
+                          offset: Offset(16 * (1 - val), 0),
+                          child: child,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 7),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.check_circle,
+                              color: AppTheme.primaryColor,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                entry.value,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 30),
 
-                  // BUTTON
+                  // ── BOTTOM BUTTONS ──────────────────────────────────────
                   Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder: (_, a, __) =>
-                                  const ContactPage(),
-                              transitionsBuilder: (_, a, __, c) {
-                                return FadeTransition(
-                                  opacity: a,
-                                  child: c,
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    child: Row(
+                      children: [
+                        // CONTACT DEALER – outlined
+                        Expanded(
+                          child: SizedBox(
+                            height: 52,
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(
+                                    color: Colors.black87, width: 1.5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (_, a, __) =>
+                                        const ContactPage(),
+                                    transitionsBuilder: (_, a, __, c) =>
+                                        FadeTransition(
+                                            opacity: a, child: c),
+                                  ),
                                 );
                               },
+                              child: const Text(
+                                'CONTACT DEALER',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
                             ),
-                          );
-                        },
-                        child: const Text(
-                          "CONTACT DEALER",
-                          style: TextStyle(color: Colors.white),
+                          ),
                         ),
-                      ),
+
+                        const SizedBox(width: 12),
+
+                        // BOOK TEST DRIVE – filled red
+                        Expanded(
+                          child: SizedBox(
+                            height: 52,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.primaryColor,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () {
+                                // Book test drive action
+                              },
+                              child: const Text(
+                                'BOOK TEST DRIVE',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -328,17 +498,17 @@ class _DetailScreenState extends State<DetailScreen>
   }
 }
 
-// SIMPLE PAGE DESTINO
+// ── CONTACT PAGE ─────────────────────────────────────────────────────────────
 class ContactPage extends StatelessWidget {
   const ContactPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Dealer")),
+      appBar: AppBar(title: const Text('Dealer')),
       body: const Center(
         child: Text(
-          "Contact Page",
+          'Contact Page',
           style: TextStyle(fontSize: 20),
         ),
       ),
