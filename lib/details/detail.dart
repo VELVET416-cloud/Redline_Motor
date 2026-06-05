@@ -300,9 +300,9 @@ class _DetailScreenState extends State<DetailScreen>
                           Navigator.push(
                             context,
                             PageRouteBuilder(
-                              pageBuilder: (_, a, __) =>
+                              pageBuilder: (_, a, _) =>
                                   const ContactPage(),
-                              transitionsBuilder: (_, a, __, c) {
+                              transitionsBuilder: (_, a, _, c) {
                                 return FadeTransition(
                                   opacity: a,
                                   child: c,

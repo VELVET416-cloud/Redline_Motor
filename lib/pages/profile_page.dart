@@ -202,60 +202,113 @@ class ProfilePage extends StatelessWidget {
 }
 
 // ─── Header ────────────────────────────────────────────────────────────────
-
 class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 16,
+        bottom: 0,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'My Profile',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
-          ),
-          GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const NotificationsPage()),
-            ),
-            child: Stack(
-              children: [
-                const Icon(Icons.notifications_outlined, size: 28, color: Colors.black),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'My Profile',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const NotificationsPage(),
                   ),
                 ),
-              ],
-            ),
+                child: Stack(
+                  children: [
+                    const Icon(
+                      Icons.notifications_outlined,
+                      size: 28,
+                      color: Colors.black,
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          Divider(
+            height: 0,
+            thickness: 0.5,
+            color: Colors.grey.shade300,
           ),
         ],
       ),
     );
   }
 }
-
 // ─── User Info ──────────────────────────────────────────────────────────────
-
 class _UserInfoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Container(
+      margin: const EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 0,
+        bottom: 0,
+      ),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(0),
+        border: Border.all(
+          color: Colors.grey.shade100,
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 18,
+            spreadRadius: 2,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
       child: Row(
         children: [
           Stack(
             children: [
               CircleAvatar(
-                radius: 36,
-                backgroundColor: Colors.grey.shade200,
-                child: const Icon(Icons.person, size: 40, color: Colors.grey),
+                radius: 41,
+                backgroundColor: Colors.red,
+                child: const CircleAvatar(
+                  radius: 38,
+                  backgroundImage: NetworkImage(
+                    'https://tse4.mm.bing.net/th/id/OIP.5qkrGrDck46HNojmxCEMOwHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
+                  ),
+                ),
               ),
               Positioned(
                 bottom: 0,
@@ -263,31 +316,66 @@ class _UserInfoSection extends StatelessWidget {
                 child: Container(
                   width: 22,
                   height: 22,
-                  decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                  child: const Icon(Icons.check, size: 14, color: Colors.white),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check,
+                    size: 14,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 16),
+
+          const SizedBox(width: 18),
+
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Alex Johnson',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)),
-              const Text('Member since Jan 2024',
-                  style: TextStyle(fontSize: 13, color: Colors.grey)),
-              const SizedBox(height: 6),
+              const Text(
+                'Alex Johnson',
+                style: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              const Text(
+                'Member since Jan 2024',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.red.shade50,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.red.shade200),
+                  border: Border.all(
+                    color: Colors.red.shade200,
+                  ),
                 ),
-                child: Text('Verified Buyer',
-                    style: TextStyle(
-                        fontSize: 12, color: Colors.red.shade600, fontWeight: FontWeight.w500)),
+                child: Text(
+                  'Verified Buyer',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.red.shade600,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),
@@ -296,9 +384,6 @@ class _UserInfoSection extends StatelessWidget {
     );
   }
 }
-
-// ─── Saved Vehicles ─────────────────────────────────────────────────────────
-
 class _SavedVehiclesSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

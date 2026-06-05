@@ -97,11 +97,11 @@ class ArrivalCarCard extends StatelessWidget {
                     PageRouteBuilder(
                       transitionDuration:
                           const Duration(milliseconds: 500),
-                      pageBuilder: (_, animation, __) {
+                      pageBuilder: (_, animation, _) {
                         return DetailScreen(car: car);
                       },
                       transitionsBuilder:
-                          (_, animation, __, child) {
+                          (_, animation, _, child) {
                         return FadeTransition(
                           opacity: animation,
                           child: child,
