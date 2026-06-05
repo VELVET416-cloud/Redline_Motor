@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../pages/profile_page.dart';
 
 class CustomHeader extends StatelessWidget {
   const CustomHeader({super.key});
@@ -31,18 +32,31 @@ class CustomHeader extends StatelessWidget {
               ),
             ],
           ),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              color: AppTheme.greyLight,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.person_outline,
-              color: AppTheme.textSecondary,
-            ),
-          ),
+
+         GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfilePage(),
+      ),
+    );
+  },
+  child: Container(
+    width: 40,
+    height: 40,
+    decoration: const BoxDecoration(
+      color: AppTheme.greyLight,
+      shape: BoxShape.circle,
+    ),
+    child: const Icon(
+      Icons.person_outline,
+      color: AppTheme.textSecondary,
+    ),
+  ),
+),
+
+
         ],
       ),
     );

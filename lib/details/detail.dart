@@ -455,23 +455,17 @@ class _DetailScreenState extends State<DetailScreen>
                             ),
                           ),
                         ),
-
-                        const SizedBox(width: 12),
-
-                        // BOOK TEST DRIVE – filled red
-                        Expanded(
-                          child: SizedBox(
-                            height: 52,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryColor,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              onPressed: () {
-                                // Book test drive action
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (_, a, _) =>
+                                  const ContactPage(),
+                              transitionsBuilder: (_, a, _, c) {
+                                return FadeTransition(
+                                  opacity: a,
+                                  child: c,
+                                );
                               },
                               child: const Text(
                                 'BOOK TEST DRIVE',
